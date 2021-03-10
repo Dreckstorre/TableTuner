@@ -1,0 +1,30 @@
+.row{
+  height: 20px !important;
+}
+.cell{
+  border: 1px solid black;
+  width: 20px !important;
+  text-align: center;
+}
+.cell-content{
+  width: 20px !important;
+  text-align: center;
+  font-size: 10px;
+}
+.input-cell{
+  width: 20px !important;
+  border: none;
+  font-size: 10px;
+}
+output-tab{
+  font-size: 10px !important;
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+input-tab{
+  font-size: 10px !important;
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}

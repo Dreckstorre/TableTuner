@@ -1,0 +1,159 @@
+import { Component, HostListener, ViewChild } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+  @ViewChild('inputString') inputString: any;
+  @HostListener('contextmenu', ['$event']) onRightClick(event: any) {
+    event.preventDefault();
+  }
+
+  public title: string = 'Table Tuner';
+  public tab: Array<Array<number>> = [
+    [0, 0, 0],
+    [0, 255, 0],
+    [0, 0, 0]
+  ];
+  // public inputString: string = '';
+  public inputXls: Array<Array<number>> = [[]];
+  public xlsBool: boolean = false;
+  public selectedCell: { value: number, x: number , y: number } = {} as { value: number, x: number , y: number };
+  public selectedSecondCell: { value: number, x: number , y: number } = {} as { value: number, x: number , y: number };
+  public highestValue: number | undefined = undefined;
+  public lowestValue: number | undefined = undefined;
+
+  public percentColors = [
+    { pct: 0.0, color: { r: 0xff, g: 0x00, b: 0 } },
+    { pct: 0.5, color: { r: 0xff, g: 0xff, b: 0 } },
+    { pct: 1.0, color: { r: 0x00, g: 0xff, b: 0 } }
+  ];
+
+
+  public evalXLS(inputedValue: string): void {
+    this.highestValue = undefined;
+    this.lowestValue = undefined;
+    this.inputXls = [];
+    const rows = inputedValue.split(' ');
+    rows.forEach((row: string, i: number): void => {
+      row.split('	').forEach((cell: string) => {
+        if(this.inputXls[i] === undefined) {
+          this.inputXls.push([]);
+        }
+        if(this.highestValue === undefined || this.highestValue < parseFloat(cell.replace(',','.'))) {
+          this.highestValue = parseFloat(cell.replace(',','.'));
+        }
+        if(this.lowestValue === undefined || this.lowestValue > parseFloat(cell.replace(',','.'))) {
+          this.lowestValue = parseFloat(cell.replace(',','.'));
+        }
+        this.inputXls[i].push(parseFloat(cell.replace(',','.')));
+      });
+    })
+  }
+
+  public revalXls(): void {
+    this.highestValue = undefined;
+    this.lowestValue = undefined;
+    this.inputXls.forEach((row: Array<number>) => {
+      row.forEach((cell: number) => {
+        if(this.highestValue === undefined || this.highestValue < cell) {
+          this.highestValue = cell;
+        }
+        if(this.lowestValue === undefined || this.lowestValue > cell) {
+          this.lowestValue = cell;
+        }
+
+      })
+
+    })
+  }
+
+  public getValueFromEvent(input: Event): string {
+    const castEvent: any = input;
+    return (castEvent.target.value)?castEvent.target.value:'';
+  }
+
+  public emptyInput(): void {
+    this.inputXls = [];
+    this.inputString.nativeElement.value = '';
+  }
+
+  public select(x: number, y: number): void {
+    this.selectedCell = {
+      value: this.inputXls[x][y],
+      x,
+      y
+    }
+  }
+
+  public selectSecond(x: number, y: number): void {
+    this.selectedSecondCell = {
+      value: this.inputXls[x][y],
+      x,
+      y
+    }
+  }
+
+  public setCell(param: any): void {
+    this.assignCell(this.selectedCell.x, this.selectedCell.y, param.value);
+    this.inputXls = Array.from(this.inputXls);
+    this.revalXls();
+  }
+
+  public assignCell(x: number, y: number, v: number){
+    this.inputXls[x][y] = v;
+  }
+
+  public getColorByCell(cell: number): string {
+    let pct : number = 0;
+    if(this.lowestValue !== undefined && this.highestValue !== undefined) {
+      pct = this.map(cell, this.lowestValue, this.highestValue, 1, 0)
+    }
+    return this.getColorForPercentage(pct);
+  }
+
+  public getColorForPercentage(pct: number): string {
+    for (var i = 1; i < this.percentColors.length - 1; i++) {
+        if (pct < this.percentColors[i].pct) {
+            break;
+        }
+    }
+    var lower = this.percentColors[i - 1];
+    var upper = this.percentColors[i];
+    var range = upper.pct - lower.pct;
+    var rangePct = (pct - lower.pct) / range;
+    var pctLower = 1 - rangePct;
+    var pctUpper = rangePct;
+    var color = {
+        r: Math.floor(lower.color.r * pctLower + upper.color.r * pctUpper),
+        g: Math.floor(lower.color.g * pctLower + upper.color.g * pctUpper),
+        b: Math.floor(lower.color.b * pctLower + upper.color.b * pctUpper)
+    };
+    return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
+  };
+
+  public map(x: number, in_min: number, in_max: number, out_min: number, out_max: number): number{
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  }
+
+  public verticalInterpolation(fx: number, fy: number, tx: number, ty: number) {
+    if(this.inputXls[fx][fy] < this.inputXls[tx][ty]) {
+      for(var i = fx; i < tx; i++) {
+        const value = this.map(i, fx, tx, this.inputXls[fx][fy], this.inputXls[tx][ty]);
+        this.assignCell(i, fy, value);
+      }
+    } else {
+      for(var i = fx; i < tx; i++) {
+        const value = this.map(i, fx, tx, this.inputXls[tx][ty], this.inputXls[fx][fy]);
+        this.assignCell(i, fy, value);
+      }
+    }
+  }
+
+  public horizontalInterpolation() {
+
+  }
+}

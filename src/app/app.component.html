@@ -1,0 +1,62 @@
+<div fxLayout="row" fxLayoutGap="15px">
+  <div fxLayout="column">
+    <mat-card fxFlex>
+      <mat-card-title>
+        Input
+      </mat-card-title>
+      <mat-card-content>
+        <div>
+          <input type="text" #inputString (input)="evalXLS(getValueFromEvent($event))"/>
+          <button (click)="emptyInput()">Remove</button>
+        </div>
+        <ng-container *ngIf="inputXls.length > 0">
+          <table class="input-tab">
+            <tbody>
+              <tr class="row" *ngFor="let row of inputXls;index as x">
+                <td class="cell" *ngFor="let cell of row;index as y">
+                  <div class="cell-content" (click)="select(x, y)" (contextmenu)="selectSecond(x,y)" [ngStyle]="{'background-color': getColorByCell(cell)}">{{cell}}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card fxFlex>
+      <mat-card-title>
+        Outils
+      </mat-card-title>
+      <mat-card-content>
+        <div>
+          <button (click)="verticalInterpolation(selectedCell.x, selectedCell.y, selectedSecondCell.x, selectedSecondCell.y)">Interpolation Vertical</button>
+        </div>
+        <div>
+          <label>1st :</label>
+          <input type="number" #selected [value]="selectedCell.value">
+          <button (click)="setCell(selected)">Set</button>
+        </div>
+        <div>
+          <label>2nd :</label>
+          <input type="number" #selectedSecond [value]="selectedSecondCell.value">
+          <button (click)="setCell(selectedSecond)">Set</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-card fxFlex>
+    <mat-card-title>
+      Output
+    </mat-card-title>
+    <mat-card-content>
+      <table class="output-tab">
+        <tbody>
+          <tr class="row" *ngFor="let row of tab">
+            <td class="cell" *ngFor="let cel of row">{{cel}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>
