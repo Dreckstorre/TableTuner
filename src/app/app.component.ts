@@ -12,6 +12,8 @@ export class AppComponent {
     event.preventDefault();
   }
 
+  public DECIMAL: number = 2;
+
   public title: string = 'Table Tuner';
   public tab: Array<Array<number>> = [
     [0, 0, 0],
@@ -136,24 +138,63 @@ export class AppComponent {
   };
 
   public map(x: number, in_min: number, in_max: number, out_min: number, out_max: number): number{
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    const map: number = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    return parseFloat(map.toFixed(this.DECIMAL));
   }
 
-  public verticalInterpolation(fx: number, fy: number, tx: number, ty: number) {
-    if(this.inputXls[fx][fy] < this.inputXls[tx][ty]) {
-      for(var i = fx; i < tx; i++) {
-        const value = this.map(i, fx, tx, this.inputXls[fx][fy], this.inputXls[tx][ty]);
-        this.assignCell(i, fy, value);
-      }
-    } else {
-      for(var i = fx; i < tx; i++) {
-        const value = this.map(i, fx, tx, this.inputXls[tx][ty], this.inputXls[fx][fy]);
-        this.assignCell(i, fy, value);
-      }
+  public simpleVerticalInterpolation(fx: number, fy: number, tx: number, ty: number) {
+    let highestValue = tx;
+    let lowestValue = fx;
+    if(fx > tx) {
+      highestValue = fx;
+      lowestValue = tx;
+    }
+
+    for(let i = lowestValue; i <= highestValue; i++) {
+      const value: number = this.map(i, fx, tx, this.inputXls[fx][fy], this.inputXls[tx][ty]);
+      this.assignCell(i, fy, value);
     }
   }
 
-  public horizontalInterpolation() {
+  
+  public verticalInterpolation(fx: number, fy: number, tx: number, ty: number) {
+    let highestValue = ty;
+    let lowestValue = fy;
+    if(fy > ty) {
+      highestValue = fy;
+      lowestValue = ty;
+    }
 
+    for(let i = lowestValue; i <= highestValue; i++) {
+      this.simpleVerticalInterpolation(fx, i, tx, i);
+    }
+  }
+
+  public simpleHorizontalInterpolation(fx: number, fy: number, tx: number, ty: number) {
+    let highestValue = ty;
+    let lowestValue = fy;
+    if(fy > ty) {
+      highestValue = fy;
+      lowestValue = ty;
+    }
+
+    for(let i = lowestValue; i <= highestValue; i++) {
+      const value: number = this.map(i, fy, ty, this.inputXls[fx][fy], this.inputXls[tx][ty]);
+      this.assignCell(fx, i, value);
+    }
+  }
+
+  
+  public horizontalInterpolation(fx: number, fy: number, tx: number, ty: number) {
+    let highestValue = tx;
+    let lowestValue = fx;
+    if(fx > tx) {
+      highestValue = fx;
+      lowestValue = tx;
+    }
+
+    for(let i = lowestValue; i <= highestValue; i++) {
+      this.simpleHorizontalInterpolation(i, fy, i, ty);
+    }
   }
 }

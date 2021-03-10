@@ -3,16 +3,16 @@
 }
 .cell{
   border: 1px solid black;
-  width: 20px !important;
+  width: 25px !important;
   text-align: center;
 }
 .cell-content{
-  width: 20px !important;
+  width: 25px !important;
   text-align: center;
   font-size: 10px;
 }
 .input-cell{
-  width: 20px !important;
+  width: 25px !important;
   border: none;
   font-size: 10px;
 }
