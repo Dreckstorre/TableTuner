@@ -1,10 +1,10 @@
-<div fxLayout="row" fxLayoutGap="15px">
-  <div fxLayout="column">
+<div fxLayout="row" fxLayoutGap="15px" fxLayoutAlign="center ">
+  <div fxLayout="column" fxLayoutGap="15px" fxFlex="50">
     <mat-card fxFlex>
       <mat-card-title>
         Input
       </mat-card-title>
-      <mat-card-content>
+      <mat-card-content fxLayout="column">
         <div>
           <input type="text" #inputString (input)="evalXLS(getValueFromEvent($event))"/>
           <button (click)="emptyInput()">Remove</button>
@@ -14,7 +14,7 @@
             <tbody>
               <tr class="row" *ngFor="let row of inputXls;index as x">
                 <td class="cell" *ngFor="let cell of row;index as y">
-                  <div class="cell-content" (click)="select(x, y)" (contextmenu)="selectSecond(x,y)" [ngStyle]="{'background-color': getColorByCell(cell)}">{{cell}}</div>
+                  <div class="cell-content" (click)="select(x, y)" (contextmenu)="selectProjection(x, y)" [ngStyle]="{'background-color': getColorByCell(cell)}">{{cell}}</div>
                 </td>
               </tr>
             </tbody>
@@ -29,37 +29,22 @@
       </mat-card-title>
       <mat-card-content>
         <div fxLayout="column">
-          <button (click)="verticalInterpolation(selectedCell.x, selectedCell.y, selectedSecondCell.x, selectedSecondCell.y)">Interpolation Vertical</button>
-          <button (click)="horizontalInterpolation(selectedCell.x, selectedCell.y, selectedSecondCell.x, selectedSecondCell.y)">Interpolation Horizontal</button>
-          <button (click)="horizontalProjection(selectedCell.x, selectedCell.y, selectedSecondCell.x, selectedSecondCell.y, selectedProjectionCell.x, selectedProjectionCell.y)">Projection Horizontal</button>
-          <button (click)="verticalProjection(selectedCell.x, selectedCell.y, selectedSecondCell.x, selectedSecondCell.y, selectedProjectionCell.x, selectedProjectionCell.y)">Projection Vertical</button>
+          <button (click)="verticalInterpolation()">Interpolation Vertical</button>
+          <button (click)="horizontalInterpolation()">Interpolation Horizontal</button>
+          <button (click)="horizontalProjection()">Projection Horizontal</button>
+          <button (click)="verticalProjection()">Projection Vertical</button>
         </div>
         <div>
           <label>1st :</label>
-          <input type="number" #selected [value]="selectedCell.value">
+          <input type="number" #selected [value]="this.xls.selectedCell.value">
           <button (click)="setCell(selected)">Set</button>
         </div>
         <div>
           <label>2nd :</label>
-          <input type="number" #selectedSecond [value]="selectedSecondCell.value">
+          <input type="number" #selectedSecond [value]="this.xls.selectedSecondCell.value">
           <button (click)="setCell(selectedSecond)">Set</button>
         </div>
       </mat-card-content>
     </mat-card>
   </div>
-
-  <mat-card fxFlex>
-    <mat-card-title>
-      Output
-    </mat-card-title>
-    <mat-card-content>
-      <table class="output-tab">
-        <tbody>
-          <tr class="row" *ngFor="let row of tab">
-            <td class="cell" *ngFor="let cel of row">{{cel}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </mat-card-content>
-  </mat-card>
 </div>

@@ -7,7 +7,7 @@
   text-align: center;
 }
 .cell-content{
-  width: 25px !important;
+  width: 100% !important;
   text-align: center;
   font-size: 10px;
 }
