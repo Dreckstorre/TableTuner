@@ -28,9 +28,11 @@
         Outils
       </mat-card-title>
       <mat-card-content>
-        <div>
+        <div fxLayout="column">
           <button (click)="verticalInterpolation(selectedCell.x, selectedCell.y, selectedSecondCell.x, selectedSecondCell.y)">Interpolation Vertical</button>
           <button (click)="horizontalInterpolation(selectedCell.x, selectedCell.y, selectedSecondCell.x, selectedSecondCell.y)">Interpolation Horizontal</button>
+          <button (click)="horizontalProjection(selectedCell.x, selectedCell.y, selectedSecondCell.x, selectedSecondCell.y, selectedProjectionCell.x, selectedProjectionCell.y)">Projection Horizontal</button>
+          <button (click)="verticalProjection(selectedCell.x, selectedCell.y, selectedSecondCell.x, selectedSecondCell.y, selectedProjectionCell.x, selectedProjectionCell.y)">Projection Vertical</button>
         </div>
         <div>
           <label>1st :</label>

@@ -25,8 +25,10 @@ export class AppComponent {
   public xlsBool: boolean = false;
   public selectedCell: { value: number, x: number , y: number } = {} as { value: number, x: number , y: number };
   public selectedSecondCell: { value: number, x: number , y: number } = {} as { value: number, x: number , y: number };
+  public selectedProjectionCell: { value: number; x: number; y: number; } = {} as { value: number, x: number , y: number };
   public highestValue: number | undefined = undefined;
   public lowestValue: number | undefined = undefined;
+  public unClicSurDeux: boolean = false;
 
   public percentColors = [
     { pct: 0.0, color: { r: 0xff, g: 0x00, b: 0 } },
@@ -84,15 +86,24 @@ export class AppComponent {
   }
 
   public select(x: number, y: number): void {
-    this.selectedCell = {
-      value: this.inputXls[x][y],
-      x,
-      y
+    if(!this.unClicSurDeux) {
+      this.selectedCell = {
+        value: this.inputXls[x][y],
+        x,
+        y
+      }
+    } else {
+      this.selectedSecondCell = {
+        value: this.inputXls[x][y],
+        x,
+        y
+      }
     }
+    this.unClicSurDeux = !this.unClicSurDeux;
   }
 
   public selectSecond(x: number, y: number): void {
-    this.selectedSecondCell = {
+    this.selectedProjectionCell = {
       value: this.inputXls[x][y],
       x,
       y
@@ -142,6 +153,7 @@ export class AppComponent {
     return parseFloat(map.toFixed(this.DECIMAL));
   }
 
+  // Vertical Interpolation 
   public simpleVerticalInterpolation(fx: number, fy: number, tx: number, ty: number) {
     let highestValue = tx;
     let lowestValue = fx;
@@ -170,6 +182,8 @@ export class AppComponent {
     }
   }
 
+
+  // Horizontal Interpolation
   public simpleHorizontalInterpolation(fx: number, fy: number, tx: number, ty: number) {
     let highestValue = ty;
     let lowestValue = fy;
@@ -195,6 +209,63 @@ export class AppComponent {
 
     for(let i = lowestValue; i <= highestValue; i++) {
       this.simpleHorizontalInterpolation(i, fy, i, ty);
+    }
+  }
+
+
+  // Horizontal Projection
+  public horizontalProjection(fx: number, fy: number, tx: number, ty: number, x: number, y: number) {
+    let highestValue = tx;
+    let lowestValue = fx;
+    if(fx > tx) {
+      highestValue = fx;
+      lowestValue = tx;
+    }
+
+    for(let i = lowestValue; i <= highestValue; i++) {
+      this.simpleHorizontalProjection(i, fy, i, ty, x, y);
+    }
+  }
+
+  public simpleHorizontalProjection(fx: number, fy: number, tx: number, ty: number, x: number, y: number) {
+    let highestValue = y;
+    let lowestValue = fy;
+    if(fy > y) {
+      highestValue = fy;
+      lowestValue = y;
+    }
+
+    for(let i = lowestValue; i <= highestValue; i++) {
+      const value: number = this.map(i, fy, ty, this.inputXls[fx][fy], this.inputXls[tx][ty]);
+      this.assignCell(fx, i, value);
+    }
+  }
+
+  // Vertical Projection
+  public verticalProjection(fx: number, fy: number, tx: number, ty: number, x: number, y: number) {
+    let highestValue = ty;
+    let lowestValue = fy;
+    if(fy > ty) {
+      highestValue = fy;
+      lowestValue = ty;
+    }
+
+    for(let i = lowestValue; i <= highestValue; i++) {
+      this.simpleVerticalProjection(fx, i, tx, i, x, y);
+    }
+  }
+
+  public simpleVerticalProjection(fx: number, fy: number, tx: number, ty: number, x: number, y: number) {
+    let highestValue = x;
+    let lowestValue = fx;
+    if(fy > y) {
+      highestValue = fx;
+      lowestValue = x;
+    }
+
+    for(let i = lowestValue; i <= highestValue; i++) {
+      const value: number = this.map(i, fx, tx, this.inputXls[fx][fy], this.inputXls[tx][ty]);
+      this.assignCell(i, fy, value);
     }
   }
 }
